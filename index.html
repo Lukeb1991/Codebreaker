@@ -24,16 +24,17 @@
 :root{
   --ink:#0b0f22;--vault:#141a35;--vault2:#1f2749;--line:rgba(150,165,230,.2);--line2:rgba(150,165,230,.42);
   --steel:#939fca;--ice:#c7d2ff;--text:#eef1ff;
-  --hit:#3fcf8e;--alarm:#ff5d73;--up:#ff6fb0;--down:#6fb7ff;
+  --hit:#3fcf8e;--alarm:#ff5d73;--up:#b8a2ff;--down:#56c8f5;
   --purple:#a855f7;--pink:#ec4899;--grad:linear-gradient(90deg,var(--purple),var(--pink));
   --serif:'DM Serif Display',Georgia,serif;--mono:'DM Mono',ui-monospace,monospace;--sans:'DM Sans',system-ui,sans-serif;
   --dw:min(60px, calc((100vw - 88px) / 5));   /* dial width */
   --r:clamp(21px, 3.4vh, 28px);               /* height of one letter on a dial */
   --key:clamp(44px, 6.4vh, 56px);
+  --mid:2;                                    /* letters visible either side of the centre of a dial */
   color-scheme:dark;box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
 }
-@supports (height:100dvh){:root{--r:clamp(21px, 3.4dvh, 28px);--key:clamp(44px, 6.4dvh, 56px)}}
+@supports (height:100svh){:root{--r:clamp(19px, 3.4svh, 28px);--key:clamp(40px, 6.4svh, 56px)}}
 /* Puzzl Lab is a dark brand: same palette whatever the viewer's theme */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#0b0f22;--text:#eef1ff}}
 :root[data-theme="dark"]{--ink:#0b0f22;--text:#eef1ff}
@@ -79,10 +80,10 @@ h1{font:400 44px/1 var(--serif);text-align:center;margin-top:2px;background:var(
 .dial{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .dial.locked,.dial.won,.dial.lost{cursor:default}
 .dial:focus-visible{outline:none}.dial:focus-visible .win{outline:2px solid var(--pink);outline-offset:2px}
-.win{position:relative;width:var(--dw);height:calc(var(--r) * 5);overflow:hidden;border-radius:10px;
+.win{position:relative;width:var(--dw);height:calc(var(--r) * (2 * var(--mid) + 1));overflow:hidden;border-radius:10px;
   background:linear-gradient(180deg,#05070f,#121937 50%,#05070f);
   box-shadow:inset 0 0 0 1px rgba(150,165,230,.16),inset 0 12px 14px -8px #000,inset 0 -12px 14px -8px #000}
-.band{position:absolute;left:3px;right:3px;top:calc(var(--r) * 2 - 5px);height:calc(var(--r) + 10px);border-radius:8px;
+.band{position:absolute;left:3px;right:3px;top:calc(var(--r) * var(--mid) - 5px);height:calc(var(--r) + 10px);border-radius:8px;
   border:1.5px solid var(--line2);background:rgba(255,255,255,.035);pointer-events:none;transition:border-color .2s,background-color .2s,box-shadow .2s}
 .strip{position:absolute;left:0;right:0;top:0;transition:transform .5s cubic-bezier(.3,1.3,.5,1)}
 .strip span{display:block;height:var(--r);line-height:var(--r);text-align:center;font:500 calc(var(--r) * .66) var(--mono);color:var(--steel);
@@ -95,7 +96,7 @@ h1{font:400 44px/1 var(--serif);text-align:center;margin-top:2px;background:var(
 .dial.rest .d0{opacity:0}
 .dial.prev .d0{opacity:.9;transform:scale(1.25)}
 .dial.prev.up .d0{color:var(--up)}.dial.prev.down .d0{color:var(--down)}
-.dial.prev.up .band{border-color:rgba(255,111,176,.45)}.dial.prev.down .band{border-color:rgba(111,183,255,.45)}
+.dial.prev.up .band{border-color:rgba(184,162,255,.5)}.dial.prev.down .band{border-color:rgba(86,200,245,.5)}
 .dial.set .d0{color:#fff}
 .dial.set .d0.out{color:var(--alarm)}
 .dial.active .band{border-color:var(--pink);box-shadow:0 0 0 3px rgba(236,72,153,.18)}
@@ -108,8 +109,9 @@ h1{font:400 44px/1 var(--serif);text-align:center;margin-top:2px;background:var(
 .hintdir{position:absolute;left:50%;width:0;height:0;margin-left:-7px;border:7px solid transparent;opacity:0;transition:opacity .25s}
 .hintdir.up{top:2px;border-bottom:8px solid var(--up);border-top-width:0;opacity:1}
 .hintdir.down{bottom:2px;border-top:8px solid var(--down);border-bottom-width:0;opacity:1}
-.range{font:500 12px var(--mono);color:var(--ice);height:15px;white-space:nowrap}
-.dial.locked .range{color:var(--hit)}
+.range{font:700 14px/20px var(--mono);color:#fff;height:20px;padding:0 6px;border-radius:6px;background:rgba(199,210,255,.09);white-space:nowrap}
+.dial.locked .range{color:var(--hit);background:rgba(63,207,142,.12)}
+.range:empty{visibility:hidden}
 .lock .dial.active .band{border-color:var(--pink);box-shadow:0 0 0 3px rgba(236,72,153,.22)}
 @keyframes bounce{35%{transform:translateY(-10px)}65%{transform:translateY(2px)}}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -134,16 +136,30 @@ h1{font:400 44px/1 var(--serif);text-align:center;margin-top:2px;background:var(
 .log .n{width:22px;font:500 11px var(--mono);color:var(--steel)}
 .c{width:46px;height:36px;border-radius:8px;background:var(--vault2);display:flex;align-items:center;justify-content:center;gap:4px;font:500 17px var(--mono);color:var(--text)}
 .c i{font-style:normal;font-size:12px}
-.c.up{background:rgba(255,111,176,.12);box-shadow:inset 0 0 0 1.5px rgba(255,111,176,.55)}.c.up i{color:var(--up)}
-.c.down{background:rgba(111,183,255,.11);box-shadow:inset 0 0 0 1.5px rgba(111,183,255,.5)}.c.down i{color:var(--down)}
+.c.up{background:rgba(184,162,255,.13);box-shadow:inset 0 0 0 1.5px rgba(184,162,255,.6)}.c.up i{color:var(--up)}
+.c.down{background:rgba(86,200,245,.11);box-shadow:inset 0 0 0 1.5px rgba(86,200,245,.55)}.c.down i{color:var(--down)}
 .c.pending{background:transparent;box-shadow:inset 0 0 0 1px var(--line2)}
 .c.hit{background:var(--hit);color:#062419}
 .c.flip{animation:flip .3s ease-in-out}
 @keyframes flip{50%{transform:rotateX(90deg)}}
 
 /* Keyboard: sticks to the bottom of the screen */
-.kbd{position:sticky;bottom:0;z-index:5;display:grid;gap:6px;user-select:none;margin:14px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
-  background:linear-gradient(to top,var(--ink) 82%,rgba(11,15,34,0))}
+.kbd{position:sticky;bottom:0;z-index:5;display:grid;gap:6px;user-select:none;margin:10px -16px 0;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:var(--ink);border-top:1px solid var(--line)}
+/* While playing, the page fits the screen exactly: only the list of tries scrolls, never under the keyboard */
+.wrap.playing{display:flex;flex-direction:column;height:calc(100vh - env(safe-area-inset-top,0px));height:calc(100svh - env(safe-area-inset-top,0px));overflow:hidden}
+.wrap.playing>*{flex:none}
+.wrap.playing .log{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;align-content:start;padding:2px 2px 6px;scrollbar-width:none}
+.wrap.playing .log::-webkit-scrollbar{display:none}
+.wrap.playing .kbd{position:static}
+.wrap.playing footer{display:none}
+@media (max-height:720px){
+  .wrap.playing{--mid:1}
+  .wrap.playing .kicker{visibility:hidden}
+  .wrap.playing h1{font-size:min(30px, 6.9vw);margin-top:-37px;margin-bottom:4px;pointer-events:none;position:relative}
+  .wrap.playing .status{margin-top:4px}
+}
+@media (max-height:620px){h1{font-size:34px}.top{height:38px}.status{margin-top:6px}.msg{margin:8px 0 4px}.cluekey{margin-bottom:6px}.kbd{gap:5px;padding-top:8px}}
 .krow{display:flex;gap:5px;justify-content:center}
 .krow.mid{padding:0 5%}
 .k{flex:1 1 0;max-width:44px;height:var(--key);border-radius:8px;background:var(--vault2);color:var(--text);font:500 17px var(--mono);display:grid;place-items:center;transition:background-color .2s,color .2s,opacity .2s}
@@ -410,7 +426,7 @@ function renderLock(stagger) {
     if (!d.className.includes('bounce') || d.className.replace(' bounce', '') !== cls) d.className = cls;
     const strip = d.querySelector('.strip');
     strip.style.transitionDelay = stagger ? i * 90 + 'ms' : '0ms';
-    strip.style.transform = `translateY(calc(var(--r) * ${2 - (25 - idx)}))`;
+    strip.style.transform = `translateY(calc(var(--r) * (var(--mid) - ${25 - idx})))`;
     [...strip.children].forEach((s, j) => {
       const x = 25 - j, dist = Math.abs(x - idx);
       s.className = (dist <= 2 ? 'd' + dist : '') + (x < lo[i] || x > hi[i] ? ' out' : '');
@@ -425,6 +441,7 @@ function renderLock(stagger) {
 
 const ARROW = {up: '▲', down: '▼'};
 const cell = (ch, s) => `<span class="c ${s || ''}">${ch}${s && ARROW[s] ? `<i>${ARROW[s]}</i>` : ''}</span>`;
+const showLatest = () => { const l = $('log'); l.scrollTop = l.scrollHeight; };   // keep your newest try in view
 function renderLog() {
   $('log').innerHTML = S.guesses.map((g, r) => {
     const res = r < shown ? score(g, CODE) : null;
@@ -499,7 +516,9 @@ function render(stagger) {
   $('kicker').textContent = TEST_MODE ? 'Test mode' : `Code No. ${DAY}`;
   renderLock(stagger); renderLog(); renderKeys(); renderTries(); paintClock(); renderHelpers();
   $('kbd').hidden = over();
+  document.querySelector('.wrap').classList.toggle('playing', !over());
   if (over()) showResult(); else $('result').hidden = true;
+  showLatest();
 }
 
 /* ================= Game flow ================= */
@@ -582,7 +601,7 @@ async function submit() {
   if (remaining() <= 0) boom();
 }
 async function revealRow(r, word) {
-  renderLog();
+  renderLog(); showLatest();
   const res = score(word, CODE), cells = [...$('log').children[r].querySelectorAll('.c')];
   for (let i = 0; i < LEN; i++) {
     const c = cells[i];
@@ -756,7 +775,7 @@ function peg(x, cx, cy, r, s) {
   x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2);
   x.fillStyle = s === 'hit' ? '#3fcf8e' : '#1f2749'; x.fill();
   if (s === 'hit') return;
-  const col = s === 'up' ? '#ff6fb0' : '#6fb7ff';
+  const col = s === 'up' ? '#b8a2ff' : '#56c8f5';
   x.strokeStyle = col; x.globalAlpha = .55; x.lineWidth = 3; x.stroke(); x.globalAlpha = 1;
   const a = r * .42, d = s === 'down' ? 1 : -1;
   x.beginPath(); x.moveTo(cx - a, cy - d * a * .55); x.lineTo(cx + a, cy - d * a * .55); x.lineTo(cx, cy + d * a * .75); x.closePath();
